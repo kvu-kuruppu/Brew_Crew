@@ -1,7 +1,8 @@
-// ignore_for_file: prefer_const_constructors
+//ignore_for_file: prefer_const_constructors
 
 import 'package:brew_crew/shared/constants.dart';
 import 'package:brew_crew/services/auth.dart';
+import 'package:brew_crew/shared/loading.dart';
 import 'package:flutter/material.dart';
 
 class SignIn extends StatefulWidget {
@@ -16,6 +17,7 @@ class SignIn extends StatefulWidget {
 class _SignInState extends State<SignIn> {
   final AuthService _auth = AuthService();
   final _formKey = GlobalKey<FormState>();
+  bool loading = false;
 
   String email = '';
   String pwd = '';
@@ -23,7 +25,7 @@ class _SignInState extends State<SignIn> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return loading ? Loading() : Scaffold(
       backgroundColor: Colors.brown[100],
       appBar: AppBar(
         backgroundColor: Colors.brown[400],
@@ -74,11 +76,14 @@ class _SignInState extends State<SignIn> {
                         TextButton.styleFrom(backgroundColor: Colors.pink[400]),
                     onPressed: () async {
                       if (_formKey.currentState!.validate()) {
-                        print('valid');
+                        setState(() {
+                          loading = true;
+                        });
                         dynamic result =
                             await _auth.signInWithEmailPwd(email, pwd);
                         if (result == null) {
                           setState(() {
+                            loading = false;
                             err = 'Sign in failed';
                           });
                         }
