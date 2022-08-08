@@ -1,4 +1,5 @@
 import 'package:brew_crew/models/userr.dart';
+import 'package:brew_crew/services/database.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class AuthService {
@@ -45,6 +46,10 @@ Future regWithEmailPwd(String email, String pwd) async {
     UserCredential result = await _auth.createUserWithEmailAndPassword(
       email: email, password: pwd);
     User? user = result.user;
+
+    // Create a new document for each user
+    await DatabaseService(uid: user!.uid).updateUserData('0', 'abc', 10);
+
     return _userFromFirebaseUser(user);
   } catch(e) {
     print(e.toString());
